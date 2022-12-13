@@ -6,7 +6,8 @@ Install the Salesforce DX CLI and make sure it is available on your system's PAT
 Save the sfdx_deploy.lua script to your NeoVim configuration directory (e.g. ~/.config/nvim/ on Linux or %LOCALAPPDATA%\nvim\ on Windows).
 Usage
 To deploy the current file using the SFDX CLI, open the file in NeoVim and run the following command:
-`:lua require("sfdx_deploy").deploy_current_file()`
+
+```:lua require("sfdx_deploy").deploy_current_file()```
 
 Alternatively, you can create a command by adding the following line to your .vimrc file:
 
