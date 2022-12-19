@@ -24,6 +24,8 @@ function DeployCurrentBuffer()
 
   -- Check for deployment status
   local status = result["status"]
+  print('Status ' .. status)
+
   if status ~= 1 then
     -- Deployment failed, so display an error message
     vim.api.nvim_err_writeln("Deployment failed: " .. result["result"]["status"])
