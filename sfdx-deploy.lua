@@ -1,53 +1,54 @@
--- Save this file as "sfdx_deploy.lua" in your neovim configuration directory
+-- Load the required modules
+local lfs = require('lfs')
+local json = require('luajson')
 
-local sfdx = require("sfdx")
+-- Define the function that will be called when the plugin is run
+function DeployCurrentBuffer()
+  -- Get the path to the current buffer
+  local buffer_path = vim.api.nvim_buf_get_name(0)
+  if buffer_path == nil then
+    return
+  end
 
-local function deploy_current_file()
-  -- Get the current file's path
-  local current_file = vim.api.nvim_get_current_file()
+  -- Construct the command to run
+  local command = 'sfdx force:source:deploy --sourcepath ' .. buffer_path .. ' --json'
 
-  -- Run the sfdx force:source:deploy command
-  local output = sfdx.force_source_deploy({
-    json = true,
-    sourcepath = current_file,
-  })
+  -- Run the command and get the output
+  local handle = io.popen(command)
+  local output = handle:read("*a")
+  handle:close()
 
-  -- Parse the command output to find any deployment errors
-  local errors = {}
-  for line in output:gmatch("[^\r\n]+") do
-    local error_message = line:match('"error": "([^"]+)"')
-    if error_message then
-      table.insert(errors, error_message)
+  -- Parse the JSON output
+  local success, result = pcall(json.decode, output)
+  if not success then
+    -- JSON decoding failed, so there was an error with the command
+    vim.api.nvim_err_writeln("Error running command: " .. command)
+    return
+  end
+
+  -- Check for deployment errors
+  local errors = result["result"]["error"]
+  if errors ~= nil then
+    -- Create the quickfix list
+    local items = {}
+    for _, error in pairs(errors) do
+      -- Add the error to the quickfix list
+      local item = {
+        filename = error["fileName"],
+        lnum = error["lineNumber"],
+        col = error["columnNumber"],
+        text = error["problem"],
+      }
+      table.insert(items, item)
     end
-  end
 
-  -- Build a quickfix list from the errors
-  local quickfix_list = {}
-  for _, error_message in ipairs(errors) do
-    table.insert(quickfix_list, {
-      filename = current_file,
-      lnum = 1,
-      col = 1,
-      text = error_message,
-      type = "E",
-    })
+    -- Set the quickfix list
+    vim.api.nvim_call_function("setqflist", { items })
+  else
+    -- No errors were found, so display a message indicating success
+    vim.api.nvim_out_write("Deployment succeeded\n")
   end
-
-  -- Set the quickfix list in neovim
-  vim.api.nvim_set_qflist(quickfix_list)
 end
 
---define force_source_deploy
-local function force_source_deploy(args)
-  local command = "sfdx force:source:deploy"
-  for key, value in pairs(args) do
-    command = command .. " --" .. key .. " " .. value
-  end
-  return vim.fn.system(command)
-end
-
---create a command to deploy the current file
-vim.cmd("command! -nargs=0 SfdxDeploy lua deploy_current_file()")
-
---bind to leader dd
---vim.api.nvim_set_keymap("n", "<leader>dd", ":SfdxDeploy<CR>", { noremap = true, silent = true })
+-- Bind the function to a command
+vim.api.nvim_command("command! DeployCurrentBuffer lua DeployCurrentBuffer()")
