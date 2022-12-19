@@ -1,4 +1,4 @@
-local json = require('nvim-treesitter.json')
+local neovim = require('neovim')
 
 -- Define the function that will be called when the plugin is run
 function DeployCurrentBuffer()
@@ -17,7 +17,7 @@ function DeployCurrentBuffer()
   handle:close()
 
   -- Parse the JSON output
-  local success, result = pcall(json.decode, output)
+  local success, result = pcall(neovim.fn.json_decode, output)
   if not success then
     -- JSON decoding failed, so there was an error with the command
     vim.api.nvim_err_writeln("Error running command: " .. command)
@@ -52,3 +52,4 @@ end
 vim.api.nvim_command("command! DeployCurrentBuffer lua require'sfdx-deploy'DeployCurrentBuffer()")
 
 return DeployCurrentBuffer
+
