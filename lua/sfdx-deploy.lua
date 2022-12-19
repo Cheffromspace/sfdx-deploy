@@ -133,4 +133,4 @@ end
 vim.api.nvim_command("command! DeployCurrentBuffer lua require'sfdx-deploy'DeployCurrentBuffer()")
 vim.api.nvim_command("command! DeployManifest lua require'sfdx-deploy'DeployManifest()")
 
-return { DeployCurrentBuffer = DeployCurrentBuffer(), DeployManifest = DeployManifest }
+return { DeployCurrentBuffer = DeployCurrentBuffer, DeployManifest = DeployManifest }
