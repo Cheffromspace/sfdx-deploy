@@ -49,6 +49,8 @@ function DeployCurrentBuffer()
       table.insert(items, item)
     end
 
+    print('Items ' .. vim.inspect(items))
+
     -- Set the quickfix list
     vim.api.nvim_call_function("setqflist", { items })
   else
