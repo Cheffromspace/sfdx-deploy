@@ -8,6 +8,7 @@ function DeployCurrentBuffer()
 
   -- Construct the command to run
   local command = 'sfdx force:source:deploy --sourcepath ' .. buffer_path .. ' --json'
+  print(command)
 
   -- Run the command and get the output
   local handle = io.popen(command)
