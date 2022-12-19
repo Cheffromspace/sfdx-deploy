@@ -1,5 +1,3 @@
--- Load the required modules
-local lfs = require('lfs')
 local json = require('luajson')
 
 -- Define the function that will be called when the plugin is run
@@ -51,4 +49,4 @@ function DeployCurrentBuffer()
 end
 
 -- Bind the function to a command
-vim.api.nvim_command("command! DeployCurrentBuffer lua DeployCurrentBuffer()")
+vim.api.nvim_command("command! DeployCurrentBuffer lua require'sfdx-deploy'DeployCurrentBuffer()")
