@@ -34,6 +34,7 @@ function DeployCurrentBuffer()
 
   -- Check for deployment errors
   local errors = result["result"]["deployedSource"]
+  print('Errors ' .. vim.inspect(errors))
   if errors ~= nil and #errors > 0 then
     -- Create the quickfix list
     local items = {}
