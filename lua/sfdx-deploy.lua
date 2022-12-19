@@ -1,4 +1,4 @@
-local json = require('luajson')
+local json = require('nvim-treesitter.json')
 
 -- Define the function that will be called when the plugin is run
 function DeployCurrentBuffer()
