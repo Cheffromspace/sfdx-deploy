@@ -1,4 +1,3 @@
--- Define the function that will be called when the plugin is run
 function DeployCurrentBuffer()
   -- Get the path to the current buffer
   local buffer_path = vim.api.nvim_buf_get_name(0)
@@ -23,18 +22,26 @@ function DeployCurrentBuffer()
     return
   end
 
+  -- Check for deployment status
+  local status = result["status"]
+  if status ~= 1 then
+    -- Deployment failed, so display an error message
+    vim.api.nvim_err_writeln("Deployment failed: " .. result["result"]["status"])
+    return
+  end
+
   -- Check for deployment errors
-  local errors = result["result"]["error"]
-  if errors ~= nil then
+  local errors = result["result"]["deployedSource"]
+  if errors ~= nil and #errors > 0 then
     -- Create the quickfix list
     local items = {}
     for _, error in pairs(errors) do
       -- Add the error to the quickfix list
       local item = {
-        filename = error["fileName"],
+        filename = error["filePath"],
         lnum = error["lineNumber"],
         col = error["columnNumber"],
-        text = error["problem"],
+        text = error["error"],
       }
       table.insert(items, item)
     end
