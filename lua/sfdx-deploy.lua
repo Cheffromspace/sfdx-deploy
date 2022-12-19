@@ -7,7 +7,6 @@ function DeployCurrentBuffer()
 
   -- Construct the command to run
   local command = 'sfdx force:source:deploy --sourcepath ' .. buffer_path .. ' --json'
-  print(command)
 
   -- Run the command and get the output
   local handle = io.popen(command)
@@ -22,37 +21,46 @@ function DeployCurrentBuffer()
     return
   end
 
+  --if result.status == 0 then
+  if result.status == 0 then
+    vim.api.nvim_out_write(result.result.deployedSource[1].fileName .. " deployed successfully")
+    return
+  end
+
+
   -- Check for deployment status
   local status = result["status"]
-  print('Status ' .. status)
-
-  if status ~= 1 then
+  if status == nil or status ~= 1 then
     -- Deployment failed, so display an error message
-    vim.api.nvim_err_writeln("Deployment failed: " .. result["result"]["status"])
+    local message = "Deployment failed"
+    if result["result"] ~= nil and result["result"]["status"] ~= nil then
+      message = message .. ": " .. result["result"]["status"]
+    end
+    vim.api.nvim_err_writeln(message)
     return
   end
 
   -- Check for deployment errors
   local errors = result["result"]["deployedSource"]
-  print('Errors ' .. vim.inspect(errors))
   if errors ~= nil and #errors > 0 then
     -- Create the quickfix list
     local items = {}
     for _, error in pairs(errors) do
       -- Add the error to the quickfix list
       local item = {
-        filename = error["filePath"],
-        lnum = error["lineNumber"],
-        col = error["columnNumber"],
-        text = error["error"],
+        filename = error["filePath"] or "",
+        lnum = error["lineNumber"] or 0,
+        col = error["columnNumber"] or 0,
+        text = error["error"] or "",
       }
       table.insert(items, item)
     end
 
-    print('Items ' .. vim.inspect(items))
-
     -- Set the quickfix list
     vim.api.nvim_call_function("setqflist", { items })
+
+    -- Open the quickfix list
+    vim.api.nvim_command("copen")
   else
     -- No errors were found, so display a message indicating success
     vim.api.nvim_out_write("Deployment succeeded\n")
