@@ -8,7 +8,6 @@ function DeployCurrentBuffer()
 
   -- Construct the command to run
   local command = 'sfdx force:source:deploy --sourcepath ' .. buffer_path .. ' --json'
-  print(command)
 
   -- Run the command and get the output
   local handle = io.popen(command)
@@ -17,7 +16,6 @@ function DeployCurrentBuffer()
 
   -- Parse the JSON output
   local success, result = pcall(vim.fn.json_decode, output)
-  print(vim.inspect(result))
   if not success then
     -- JSON decoding failed, so there was an error with the command
     vim.api.nvim_err_writeln("Error running command: " .. command)
