@@ -47,13 +47,15 @@ function DeployCurrentBuffer()
     local items = {}
     for _, error in pairs(errors) do
       -- Add the error to the quickfix list
-      local item = {
-        filename = error["filePath"] or "",
-        lnum = error["lineNumber"] or 0,
-        col = error["columnNumber"] or 0,
-        text = error["error"] or "",
-      }
-      table.insert(items, item)
+      if error["error"] ~= nil then
+        local item = {
+          filename = error["filePath"] or "",
+          lnum = error["lineNumber"] or 0,
+          col = error["columnNumber"] or 0,
+          text = error["error"] or "",
+        }
+        table.insert(items, item)
+      end
     end
 
     -- Set the quickfix list
@@ -111,14 +113,31 @@ function DeployManifest()
     local items = {}
     for _, error in pairs(errors) do
       -- Add the error to the quickfix list
-      local item = {
-        filename = error["filePath"] or "",
-        lnum = error["lineNumber"] or 0,
-        col = error["columnNumber"] or 0,
-        text = error["error"] or "",
-      }
-      table.insert(items, item)
+      if error["error"] ~= nil then
+        local item = {
+          filename = error["filePath"] or "",
+          lnum = error["lineNumber"] or 0,
+          col = error["columnNumber"] or 0,
+          text = error["error"] or "",
+        }
+        table.insert(items, item)
+      end
     end
+    -- Check for deployment errors
+    -- local errors = result["result"]["deployedSource"]
+    -- if errors ~= nil and #errors > 0 then
+    --   -- Create the quickfix list
+    --   local items = {}
+    --   for _, error in pairs(errors) do
+    --     -- Add the error to the quickfix list
+    --     local item = {
+    --       filename = error["filePath"] or "",
+    --       lnum = error["lineNumber"] or 0,
+    --       col = error["columnNumber"] or 0,
+    --       text = error["error"] or "",
+    --     }
+    --     table.insert(items, item)
+    --   end
 
     -- Set the quickfix list
     vim.api.nvim_call_function("setqflist", { items })
