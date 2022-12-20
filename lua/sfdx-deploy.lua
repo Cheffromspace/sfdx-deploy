@@ -68,7 +68,7 @@ function DeployCurrentBuffer()
 end
 
 function DeployManifest()
-  local project_root = find_project_root()
+  local project_root = Find_project_root()
 
   -- Construct the command to run
   local command = 'sfdx force:source:deploy -x ' .. project_root .. '/manifest/package.xml --json'
