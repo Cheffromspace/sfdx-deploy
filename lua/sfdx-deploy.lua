@@ -131,7 +131,7 @@ function DeployManifest()
   end
 end
 
-local function find_project_root()
+function Find_project_root()
   --get current file path
   local buf_path = vim.fn.expand('%:p:h')
   local dir = buf_path
@@ -153,7 +153,7 @@ local function find_project_root()
 end
 
 -- Bind the function to a command
-vim.api.nvim_command("command! DeployCurrentBuffer lua require'sfdx-deploy'DeployCurrentBuffer()")
-vim.api.nvim_command("command! DeployManifest lua require'sfdx-deploy'DeployManifest()")
+-- vim.api.nvim_command("command! DeployCurrentBuffer lua require'sfdx-deploy'DeployCurrentBuffer()")
+-- vim.api.nvim_command("command! DeployManifest lua require'sfdx-deploy'DeployManifest()")
 
 return { DeployCurrentBuffer = DeployCurrentBuffer, DeployManifest = DeployManifest }
