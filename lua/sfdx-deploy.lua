@@ -139,7 +139,7 @@ function Find_project_root()
   -- Keep going up the directory tree until we find the root folder
   while dir ~= '/' do
     -- Check if the current directory has a sfdx-project.json file or a .git folder
-    if lfs.attributes(dir .. '/sfdx-project.json') or lfs.attributes(dir .. '/.git') then
+    if vim.fn.filereadable(dir .. '/sfdx-project.json') == 1 or vim.fn.isdirectory(dir .. '/.git') == 1 then
       -- If we find either of these files, return the current directory as the project root
       return dir
     end
@@ -148,8 +148,13 @@ function Find_project_root()
     dir = dirname(dir)
   end
 
-  -- If we reach the root directory without finding a project root, show an error message
-  nvim_err_writeln('Error: Unable to find project root. Make sure you are in a project directory.')
+  -- Return an error message if the root of the directory tree is reached without finding the project root
+  return "Error: Project root could not be found."
+end
+
+-- define the dirname function
+function dirname(path)
+  return vim.fn.fnamemodify(path, ":h")
 end
 
 -- Bind the function to a command
