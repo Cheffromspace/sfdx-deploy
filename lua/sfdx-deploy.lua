@@ -68,8 +68,10 @@ function DeployCurrentBuffer()
 end
 
 function DeployManifest()
+  local project_root = find_project_root()
+
   -- Construct the command to run
-  local command = 'sfdx force:source:deploy -x manifest/package.xml --json'
+  local command = 'sfdx force:source:deploy -x ' .. project_root .. '/manifest/package.xml --json'
 
   -- Run the command and get the output
   local handle = io.popen(command)
@@ -127,6 +129,27 @@ function DeployManifest()
     -- No errors were found, so display a message indicating success
     vim.api.nvim_out_write("Deployment succeeded\n")
   end
+end
+
+local function find_project_root()
+  --get current file path
+  local buf_path = vim.fn.expand('%:p:h')
+  local dir = buf_path
+
+  -- Keep going up the directory tree until we find the root folder
+  while dir ~= '/' do
+    -- Check if the current directory has a sfdx-project.json file or a .git folder
+    if lfs.attributes(dir .. '/sfdx-project.json') or lfs.attributes(dir .. '/.git') then
+      -- If we find either of these files, return the current directory as the project root
+      return dir
+    end
+
+    -- Go up one level in the directory tree
+    dir = dirname(dir)
+  end
+
+  -- If we reach the root directory without finding a project root, show an error message
+  nvim_err_writeln('Error: Unable to find project root. Make sure you are in a project directory.')
 end
 
 -- Bind the function to a command
